@@ -1,0 +1,33 @@
+dog:
+  name: "Hihi"
+  breed: "Shiba Inu"
+
+location:
+  city: "東京都中央区晴海"
+  lat: 35.6605
+  lon: 139.7868
+
+schedule:
+  evening_reminder: "20:00"
+  morning_reminder: "07:00"
+  timezone: "Asia/Tokyo"
+
+# 遛狗习惯 - 每个 session 定义一次遛狗
+# time_range: 可接受的时间范围
+# preferred_time: 理想出门时间
+# duration_min: 期望遛狗时长(分钟)
+walks:
+  - name: "午遛"
+    time_range: ["11:00", "14:00"]
+    preferred_time: "12:00"
+    duration_min: 30
+
+  - name: "晚遛"
+    time_range: ["17:00", "21:00"]
+    preferred_time: "19:00"
+    duration_min: 30
+
+language: "zh"
+
+notifications:
+  platform: "wechat"
