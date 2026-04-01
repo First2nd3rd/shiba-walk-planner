@@ -26,14 +26,14 @@ class HourlyWeather:
     def rain_level(self) -> str:
         p = self.precipitation_mm
         if p == 0:
-            return "无雨"
+            return "none"
         if p < 1:
-            return "小雨"
+            return "light"
         if p < 4:
-            return "中雨"
+            return "moderate"
         if p < 10:
-            return "大雨"
-        return "暴雨"
+            return "heavy"
+        return "torrential"
 
 
 API_URL = "https://api.open-meteo.com/v1/forecast"

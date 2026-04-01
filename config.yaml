@@ -3,7 +3,7 @@ dog:
   breed: "Shiba Inu"
 
 location:
-  city: "東京都中央区晴海"
+  city: "Harumi, Chuo-ku, Tokyo"
   lat: 35.6605
   lon: 139.7868
 
@@ -12,22 +12,26 @@ schedule:
   morning_reminder: "07:00"
   timezone: "Asia/Tokyo"
 
-# 遛狗习惯 - 每个 session 定义一次遛狗
-# time_range: 可接受的时间范围
-# preferred_time: 理想出门时间
-# duration_min: 期望遛狗时长(分钟)
+# Walk sessions - add/remove/modify to match your routine
+# Each session: name, acceptable time_range, preferred_time, duration_min
 walks:
-  - name: "午遛"
+  - name: "midday"
     time_range: ["11:00", "14:00"]
     preferred_time: "12:00"
     duration_min: 30
 
-  - name: "晚遛"
+  - name: "evening"
     time_range: ["17:00", "21:00"]
     preferred_time: "19:00"
     duration_min: 30
 
+# Output language for AI recommendations (zh/en/ja/etc.)
 language: "zh"
+
+# API settings - key can also be set via ANTHROPIC_API_KEY env var
+api:
+  # anthropic_api_key: "sk-..."  # or use .env / env var instead
+  anthropic_model: "claude-sonnet-4-5-20250514"
 
 notifications:
   platform: "wechat"
