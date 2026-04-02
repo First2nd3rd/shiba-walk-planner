@@ -47,7 +47,7 @@
 [Claude API] -- 生成自然语言消息 (友好、简洁、可执行)
         |
         v
-[WeChat] -- 推送给女朋友
+[LINE Bot] -- 推送给女朋友
 ```
 
 ## Tech Stack
@@ -57,7 +57,7 @@
 | Language | Python 3.11+ | 简单，生态好 |
 | Weather API | OpenWeatherMap One Call 3.0 | 逐小时预报，免费1000次/天 |
 | AI | Claude API | 生成友好的中文消息 |
-| Messaging | WeChat (企业微信/服务号) | 女朋友日常使用，推送自然 |
+| Messaging | LINE Messaging API | 推送方便，SDK 成熟 |
 | Scheduler | cron / GitHub Actions | 每天2次触发 |
 
 ## Project Structure
@@ -72,7 +72,7 @@ shiba-walk-planner/
     weather.py          # 天气API + 逐小时数据解析
     optimizer.py        # 核心: 遛狗时间窗口分析算法
     ai_message.py       # Claude API 生成消息
-    notifier.py         # 消息推送 (WeChat)
+    notifier.py         # 消息推送 (LINE Bot)
     config.py           # 配置加载
   tests/
 ```
@@ -123,7 +123,7 @@ preferences:
 language: "zh"
 
 notifications:
-  platform: "wechat"
+  platform: "line"
 ```
 
 ## MVP Scope
@@ -131,5 +131,5 @@ notifications:
 1. OpenWeatherMap 逐小时天气获取
 2. Walk window optimizer 核心算法
 3. Claude API 生成中文消息
-4. WeChat 推送 (企业微信应用 或 服务号模板消息)
+4. LINE Bot 推送
 5. Cron 每天2次 (晚8点 + 早7点)

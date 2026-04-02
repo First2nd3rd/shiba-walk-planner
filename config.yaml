@@ -34,4 +34,8 @@ api:
   anthropic_model: "claude-sonnet-4-5-20250514"
 
 notifications:
-  platform: "wechat"
+  platform: "line"
+  # LINE Messaging API credentials - can also use env vars:
+  # LINE_CHANNEL_ACCESS_TOKEN, LINE_USER_ID
+  # line_channel_access_token: "your-channel-access-token"
+  # line_user_id: "your-line-user-id"

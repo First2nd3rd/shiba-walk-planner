@@ -65,6 +65,7 @@ def generate_walk_plan(
     config: AppConfig,
     forecast: list[HourlyWeather],
     target_date: datetime,
+    day_label: str = "今天",
 ) -> str:
     weather_table = _format_weather_data(forecast, target_date)
     walk_habits = _format_walk_habits(config.walks)
@@ -73,7 +74,7 @@ def generate_walk_plan(
 ## Info
 - Dog: {config.dog.name} ({config.dog.breed})
 - Location: {config.location.city}
-- Date: {target_date.strftime('%Y-%m-%d')}
+- Date: {target_date.strftime('%Y-%m-%d')} ({day_label})
 - Reply language: {config.language}
 
 ## Walk schedule
@@ -82,9 +83,12 @@ def generate_walk_plan(
 ## Hourly weather forecast
 {weather_table}
 
-Based on the above, provide walk plan recommendations for this day."""
+Based on the above, provide walk plan recommendations. Use "{day_label}" (not "今天" or "明天") when referring to the date."""
 
-    client = anthropic.Anthropic(api_key=config.api.anthropic_api_key or None)
+    client = anthropic.Anthropic(
+        api_key=config.api.anthropic_api_key or None,
+        base_url=config.api.anthropic_base_url or None,
+    )
     message = client.messages.create(
         model=config.api.anthropic_model,
         max_tokens=512,

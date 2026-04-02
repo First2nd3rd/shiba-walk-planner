@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @dataclass
@@ -37,12 +40,15 @@ class WalkSession:
 
 @dataclass
 class NotificationsConfig:
-    platform: str = "wechat"
+    platform: str = "line"
+    line_channel_access_token: str = ""
+    line_user_id: str = ""
 
 
 @dataclass
 class ApiConfig:
     anthropic_api_key: str = ""
+    anthropic_base_url: str = ""
     anthropic_model: str = "claude-sonnet-4-5-20250514"
 
 
@@ -70,6 +76,22 @@ def _parse_walk_session(raw: dict) -> WalkSession:
     )
 
 
+def _parse_notifications(raw: dict) -> NotificationsConfig:
+    return NotificationsConfig(
+        platform=raw.get("platform", "line"),
+        line_channel_access_token=(
+            raw.get("line_channel_access_token")
+            or os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
+            or ""
+        ),
+        line_user_id=(
+            raw.get("line_user_id")
+            or os.environ.get("LINE_USER_ID")
+            or ""
+        ),
+    )
+
+
 def load_config(path: str | Path | None = None) -> AppConfig:
     if path is None:
         path = os.environ.get(
@@ -92,9 +114,20 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         or os.environ.get("ANTHROPIC_API_KEY")
         or ""
     )
+    base_url = (
+        api_raw.get("anthropic_base_url")
+        or os.environ.get("ANTHROPIC_BASE_URL")
+        or ""
+    )
+    model = (
+        api_raw.get("anthropic_model")
+        or os.environ.get("ANTHROPIC_MODEL")
+        or "claude-sonnet-4-5-20250514"
+    )
     api = ApiConfig(
         anthropic_api_key=api_key,
-        anthropic_model=api_raw.get("anthropic_model", "claude-sonnet-4-5-20250514"),
+        anthropic_base_url=base_url,
+        anthropic_model=model,
     )
 
     return AppConfig(
@@ -103,6 +136,6 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         schedule=ScheduleConfig(**raw.get("schedule", {})),
         walks=walks,
         language=raw.get("language", "zh"),
-        notifications=NotificationsConfig(**raw.get("notifications", {})),
+        notifications=_parse_notifications(raw.get("notifications", {})),
         api=api,
     )
