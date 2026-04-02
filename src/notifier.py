@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from linebot.v3.messaging import (
     ApiClient,
+    BroadcastRequest,
     Configuration,
     MessagingApi,
-    PushMessageRequest,
     TextMessage,
 )
 
@@ -12,19 +12,17 @@ from src.config import NotificationsConfig
 
 
 def send_line_message(config: NotificationsConfig, message: str) -> None:
-    """Push a text message to a LINE user via Messaging API."""
-    if not config.line_channel_access_token or not config.line_user_id:
+    """Broadcast a text message to all LINE friends."""
+    if not config.line_channel_access_token:
         raise ValueError(
-            "LINE credentials missing. Set LINE_CHANNEL_ACCESS_TOKEN and "
-            "LINE_USER_ID in .env or config.yaml."
+            "LINE credentials missing. Set LINE_CHANNEL_ACCESS_TOKEN in .env or config.yaml."
         )
 
     configuration = Configuration(access_token=config.line_channel_access_token)
     with ApiClient(configuration) as client:
         api = MessagingApi(client)
-        api.push_message(
-            PushMessageRequest(
-                to=config.line_user_id,
+        api.broadcast(
+            BroadcastRequest(
                 messages=[TextMessage(text=message)],
             )
         )

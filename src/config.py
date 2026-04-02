@@ -42,7 +42,6 @@ class WalkSession:
 class NotificationsConfig:
     platform: str = "line"
     line_channel_access_token: str = ""
-    line_user_id: str = ""
 
 
 @dataclass
@@ -82,11 +81,6 @@ def _parse_notifications(raw: dict) -> NotificationsConfig:
         line_channel_access_token=(
             raw.get("line_channel_access_token")
             or os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
-            or ""
-        ),
-        line_user_id=(
-            raw.get("line_user_id")
-            or os.environ.get("LINE_USER_ID")
             or ""
         ),
     )
