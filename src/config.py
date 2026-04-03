@@ -6,6 +6,7 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
+from timezonefinder import TimezoneFinder
 
 load_dotenv()
 
@@ -26,8 +27,7 @@ class LocationConfig:
 @dataclass
 class ScheduleConfig:
     evening_reminder: str = "20:00"
-    morning_reminder: str = "07:00"
-    timezone: str = "Asia/Tokyo"
+    morning_reminder: str = "08:00"
 
 
 @dataclass
@@ -63,6 +63,7 @@ class AppConfig:
     language: str = "zh"
     notifications: NotificationsConfig = field(default_factory=NotificationsConfig)
     api: ApiConfig = field(default_factory=ApiConfig)
+    timezone: str = "Asia/Tokyo"
 
 
 def _parse_walk_session(raw: dict) -> WalkSession:
@@ -124,12 +125,21 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         anthropic_model=model,
     )
 
+    location = LocationConfig(**raw.get("location", {}))
+    schedule_raw = raw.get("schedule", {})
+    schedule_raw.pop("timezone", None)  # timezone is now derived from location
+
+    # Derive timezone from coordinates
+    tf = TimezoneFinder()
+    timezone = tf.timezone_at(lat=location.lat, lng=location.lon) or "UTC"
+
     return AppConfig(
         dog=DogConfig(**raw.get("dog", {})),
-        location=LocationConfig(**raw.get("location", {})),
-        schedule=ScheduleConfig(**raw.get("schedule", {})),
+        location=location,
+        schedule=ScheduleConfig(**schedule_raw),
         walks=walks,
         language=raw.get("language", "zh"),
         notifications=_parse_notifications(raw.get("notifications", {})),
         api=api,
+        timezone=timezone,
     )

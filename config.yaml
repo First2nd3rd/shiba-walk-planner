@@ -9,8 +9,7 @@ location:
 
 schedule:
   evening_reminder: "20:00"
-  morning_reminder: "07:00"
-  timezone: "Asia/Tokyo"
+  morning_reminder: "08:00"
 
 # Walk sessions - add/remove/modify to match your routine
 # Each session: name, acceptable time_range, preferred_time, duration_min
@@ -21,8 +20,8 @@ walks:
     duration_min: 30
 
   - name: "evening"
-    time_range: ["17:00", "21:00"]
-    preferred_time: "19:00"
+    time_range: ["19:00", "23:00"]
+    preferred_time: "21:00"
     duration_min: 30
 
 # Output language for AI recommendations (zh/en/ja/etc.)
