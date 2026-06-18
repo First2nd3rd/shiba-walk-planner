@@ -46,9 +46,14 @@ class NotificationsConfig:
 
 @dataclass
 class ApiConfig:
-    anthropic_api_key: str = ""
-    anthropic_base_url: str = ""
-    anthropic_model: str = "claude-sonnet-4-5-20250514"
+    api_key: str = ""
+    base_url: str = "https://openrouter.ai/api/v1"
+    model: str = "openai/gpt-oss-120b:free"
+    fallback_models: list[str] = field(default_factory=lambda: [
+        "google/gemma-4-31b-it:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "qwen/qwen3-next-80b-a3b-instruct:free",
+    ])
 
 
 @dataclass
@@ -102,27 +107,33 @@ def load_config(path: str | Path | None = None) -> AppConfig:
     walks_raw = raw.get("walks", [])
     walks = [_parse_walk_session(w) for w in walks_raw] if walks_raw else AppConfig.walks
 
-    # API key: config.yaml -> env var -> empty
+    # api_key: config.yaml -> env var -> empty; base_url/model fall back to OpenRouter defaults
     api_raw = raw.get("api", {})
     api_key = (
-        api_raw.get("anthropic_api_key")
-        or os.environ.get("ANTHROPIC_API_KEY")
+        api_raw.get("api_key")
+        or os.environ.get("OPENROUTER_API_KEY")
         or ""
     )
     base_url = (
-        api_raw.get("anthropic_base_url")
-        or os.environ.get("ANTHROPIC_BASE_URL")
-        or ""
+        api_raw.get("base_url")
+        or os.environ.get("OPENROUTER_BASE_URL")
+        or "https://openrouter.ai/api/v1"
     )
     model = (
-        api_raw.get("anthropic_model")
-        or os.environ.get("ANTHROPIC_MODEL")
-        or "claude-sonnet-4-5-20250514"
+        api_raw.get("model")
+        or os.environ.get("OPENROUTER_MODEL")
+        or "openai/gpt-oss-120b:free"
     )
+    fallback_models = api_raw.get("fallback_models") or [
+        "google/gemma-4-31b-it:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "qwen/qwen3-next-80b-a3b-instruct:free",
+    ]
     api = ApiConfig(
-        anthropic_api_key=api_key,
-        anthropic_base_url=base_url,
-        anthropic_model=model,
+        api_key=api_key,
+        base_url=base_url,
+        model=model,
+        fallback_models=fallback_models,
     )
 
     location = LocationConfig(**raw.get("location", {}))

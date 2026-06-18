@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-import anthropic
+from openai import OpenAI, APIError
 
 from src.config import AppConfig, WalkSession
 from src.weather import HourlyWeather
@@ -29,7 +29,8 @@ cold (<0C) suggest shorter walks; strong wind (>40km/h) warn about safety
 - Concise: 2-5 sentences with actionable advice
 - Always include specific times
 - Always remind about gear when needed (umbrella, raincoat, water)
-- IMPORTANT: Reply in the language specified by the user
+- Plain text only: no markdown (no **bold**, headings, or bullets) — this is sent as a plain LINE message
+- IMPORTANT: Reply in the language specified by the user. For Chinese (zh), always use Simplified Chinese (简体中文) — never Traditional characters or mixed script
 """
 
 
@@ -85,15 +86,31 @@ def generate_walk_plan(
 
 Based on the above, provide walk plan recommendations. Use "{day_label}" (not "今天" or "明天") when referring to the date."""
 
-    client = anthropic.Anthropic(
-        api_key=config.api.anthropic_api_key or None,
-        base_url=config.api.anthropic_base_url or None,
-    )
-    message = client.messages.create(
-        model=config.api.anthropic_model,
-        max_tokens=512,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}],
+    client = OpenAI(
+        api_key=config.api.api_key or None,
+        base_url=config.api.base_url or None,
     )
 
-    return message.content[0].text
+    # Free models get rate-limited upstream; try the primary, then fall back.
+    candidates = [config.api.model] + [
+        m for m in config.api.fallback_models if m != config.api.model
+    ]
+    errors: list[str] = []
+    for index, model in enumerate(candidates):
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                max_tokens=512,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_message},
+                ],
+                extra_headers={"X-Title": "Shiba Walk Planner"},
+            )
+            if index > 0:
+                print(f"[ai] primary unavailable; used fallback model: {model}")
+            return response.choices[0].message.content
+        except APIError as exc:
+            errors.append(f"{model} -> {type(exc).__name__}")
+
+    raise RuntimeError("All walk-plan models failed: " + "; ".join(errors))

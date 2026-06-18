@@ -27,10 +27,17 @@ walks:
 # Output language for AI recommendations (zh/en/ja/etc.)
 language: "zh"
 
-# API settings - key can also be set via ANTHROPIC_API_KEY env var
+# API settings - OpenRouter (OpenAI-compatible). Get a key at https://openrouter.ai/keys
+# Key via OPENROUTER_API_KEY env var (.env) or uncomment api_key below.
 api:
-  # anthropic_api_key: "sk-..."  # or use .env / env var instead
-  anthropic_model: "claude-sonnet-4-5-20250514"
+  # api_key: "sk-or-v1-..."  # prefer .env / OPENROUTER_API_KEY env var instead
+  base_url: "https://openrouter.ai/api/v1"
+  # Primary free model (tried first); falls back to the list below if rate-limited.
+  model: "openai/gpt-oss-120b:free"
+  fallback_models:
+    - "google/gemma-4-31b-it:free"
+    - "meta-llama/llama-3.3-70b-instruct:free"
+    - "qwen/qwen3-next-80b-a3b-instruct:free"
 
 notifications:
   platform: "line"
