@@ -29,6 +29,7 @@ cold (<0C) suggest shorter walks; strong wind (>40km/h) warn about safety
 - Concise: 2-5 sentences with actionable advice
 - Always include specific times
 - Always remind about gear when needed (umbrella, raincoat, water)
+- Keep the dog's name EXACTLY as given (verbatim) — never translate, transliterate, or invent a name for it
 - Plain text only: no markdown (no **bold**, headings, or bullets) — this is sent as a plain LINE message
 - IMPORTANT: Reply in the language specified by the user. For Chinese (zh), always use Simplified Chinese (简体中文) — never Traditional characters or mixed script
 """
