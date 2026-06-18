@@ -16,6 +16,11 @@ on:
         options:
           - evening
           - morning
+      dry_run:
+        description: "Dry run (generate plan but do NOT send LINE)"
+        required: false
+        default: false
+        type: boolean
 
 env:
   OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -53,4 +58,4 @@ jobs:
           fi
 
       - name: Run walk planner
-        run: python -m src.main --mode ${{ steps.mode.outputs.mode }}
+        run: python -m src.main --mode ${{ steps.mode.outputs.mode }} ${{ inputs.dry_run && '--dry-run' || '' }}
